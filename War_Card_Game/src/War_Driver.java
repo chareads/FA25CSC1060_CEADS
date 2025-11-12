@@ -2,19 +2,52 @@
 public class War_Driver {
 
 	public static void main(String[] args) {
-		Card[] cards = new Card[52];
-		Card target = new Card(7, 1);
-		int index = 0;
-		for (int suit = 0; suit < 4; suit++) {
-			for (int rank = 1; rank <= 13; rank++) {
-				cards[index] = new Card(rank, suit);
-				index++;
+		Deck deck = new Deck();
+		deck.shuffle();
+		
+		Pile p1 = new Pile();
+		p1.addDeck(deck.subdeck(0,  25));
+		Pile p2 = new Pile();
+		p2.addDeck(deck.subdeck(26, 51));
+		
+		Pile center = new Pile();
+		int diff = -1;
+		while (!p1.isEmpty() && !p2.isEmpty()) {
+			if (diff != 0) {
+				center = new Pile();
+			}
+			
+			Card c1 = p1.pop();
+			Card c2 = p2.pop();
+			System.out.println(c1 + ", " + c2);
+			
+			diff = c1.getRank() - c2.getRank();
+			if(diff > 0) {
+				while (!center.isEmpty()) {
+					Card card = center.pop();
+					p1.add(card);
+				}
+			}
+			else if (diff < 0) {
+				while (!center.isEmpty()) {
+					Card card = center.pop();
+					p2.add(card);
+				}
+			}
+			else {
+				System.out.println("WAAAAGH!!!");
+				for (int i = 0; i < 3; i++) {
+					if (!p1.isEmpty() && !p2.isEmpty()) {
+						center.add(p1.pop());
+						center.add(p2.pop());
+					}
+				}
 			}
 		}
-		//printDeck(cards);
+		
 		System.out.println();
-		//System.out.println(search(cards, threeClub));
-		System.out.println(cards[binSearch(cards, target)]);
+		if (p1.isEmpty()) System.out.println("Player 2 wins!");
+		else System.out.println("Player 1 wins!");
 	}
 
 	private static int binSearch(Card[] cards, Card target) {
